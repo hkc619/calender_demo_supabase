@@ -49,7 +49,7 @@ export default function AddMealModal({
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <DialogPanel className="bg-white rounded-xl p-6 shadow-lg w-full max-w-md">
-          <DialogTitle className="text-lg font-semibold mb-4">
+          <DialogTitle className="text-lg font-semibold text-black mb-4">
             Add Meal
           </DialogTitle>
 
@@ -61,7 +61,7 @@ export default function AddMealModal({
               <select
                 value={mealType}
                 onChange={(e) => setMealType(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 mt-1"
+                className="w-full border rounded-lg text-gray-600 px-3 py-2 mt-1"
               >
                 <option value="breakfast">Breakfast 🍳</option>
                 <option value="lunch">Lunch 🍱</option>
@@ -77,7 +77,7 @@ export default function AddMealModal({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 mt-1"
+                className="w-full border rounded-lg text-gray-600 px-3 py-2 mt-1"
               />
             </div>
 
@@ -90,7 +90,7 @@ export default function AddMealModal({
                 placeholder="e.g. Grilled Salmon Bowl"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 mt-1"
+                className="w-full border rounded-lg text-gray-600 px-3 py-2 mt-1"
               />
             </div>
           </div>

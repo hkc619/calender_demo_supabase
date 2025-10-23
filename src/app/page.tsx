@@ -37,7 +37,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen p-6 bg-gray-50">
+    <main className="min-h-screen p-6 bg-gray-500">
       {/* Header toolbar */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">🍽️ Meal Planner Calendar</h1>
@@ -50,7 +50,7 @@ export default function Home() {
       </div>
 
       {/* Calendar */}
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="bg-white p-4 text-black rounded-xl shadow">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
