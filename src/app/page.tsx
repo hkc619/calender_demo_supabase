@@ -54,6 +54,7 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
+          timeZone="local"
           headerToolbar={{
             left: "prev,next today",
             center: "title",
@@ -61,6 +62,13 @@ export default function Home() {
           }}
           height="80vh"
           events={events}
+          displayEventTime={false}
+          eventDidMount={(info) => {
+            if (info.event.extendedProps.meal_items) {
+              const dishes = info.event.extendedProps.meal_items.join(", ");
+              info.el.setAttribute("title", dishes);
+            }
+          }}
         />
       </div>
 

@@ -14,11 +14,17 @@ export async function GET() {
 
 // POST: 新增事件
 export async function POST(req: Request) {
-  const { title, mealType, startTime, endTime } = await req.json();
+  const { title, mealType, startTime, endTime, mealItems } = await req.json();
   const { data, error } = await supabase
     .from("events")
     .insert([
-      { title, meal_type: mealType, start_time: startTime, end_time: endTime },
+      {
+        title,
+        meal_type: mealType,
+        start_time: startTime,
+        end_time: endTime,
+        meal_items: mealItems,
+      },
     ])
     .select();
   if (error)

@@ -17,14 +17,30 @@ export default function AddMealModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const [title, setTitle] = useState("");
+  const [mealItems, setMealItems] = useState<string[]>([""]);
   const [mealType, setMealType] = useState("breakfast");
   const [date, setDate] = useState("");
 
-  const handleSave = async () => {
-    if (!title || !date) return alert("Please fill in all fields");
+  const handleAddDish = () => {
+    if (mealItems.length >= 5) return alert("You can only add up to 5 dishes.");
+    setMealItems([...mealItems, ""]);
+  };
 
-    const startTime = new Date(date).toISOString();
+  const handleChange = (index: number, value: string) => {
+    const updated = [...mealItems];
+    updated[index] = value;
+    setMealItems(updated);
+  };
+  const handleSave = async () => {
+    if (mealItems.filter(Boolean).length === 0 || !date)
+      return alert("Please fill in all fields");
+
+    const startTime = `${date}T00:00:00`;
+    const formattedDate = startTime.split("T")[0];
+    const title = `${formattedDate} ${
+      mealType.charAt(0).toUpperCase() + mealType.slice(1)
+    }`;
+
     await fetch("/api/events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -33,10 +49,11 @@ export default function AddMealModal({
         mealType,
         startTime,
         endTime: startTime,
+        mealItems: mealItems.filter(Boolean), // ✅ 移除空白欄位
       }),
     });
 
-    setTitle("");
+    //setTitle("");
     setDate("");
     setMealType("breakfast");
     onSaved();
@@ -54,6 +71,7 @@ export default function AddMealModal({
           </DialogTitle>
 
           <div className="space-y-4">
+            {/* Meal Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Meal Type
@@ -68,7 +86,7 @@ export default function AddMealModal({
                 <option value="dinner">Dinner 🍲</option>
               </select>
             </div>
-
+            {/* Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Date
@@ -80,21 +98,34 @@ export default function AddMealModal({
                 className="w-full border rounded-lg text-gray-600 px-3 py-2 mt-1"
               />
             </div>
-
+            {/* Dishes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Meal Title
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Dishes (up to 5)
               </label>
-              <input
-                type="text"
-                placeholder="e.g. Grilled Salmon Bowl"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full border rounded-lg text-gray-600 px-3 py-2 mt-1"
-              />
+              {mealItems.map((item, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  placeholder={`Dish ${i + 1}`}
+                  value={item}
+                  onChange={(e) => handleChange(i, e.target.value)}
+                  className="w-full border rounded-lg text-gray-700 px-3 py-2 mb-2"
+                />
+              ))}
+
+              {mealItems.length < 5 && (
+                <button
+                  type="button"
+                  onClick={handleAddDish}
+                  className="text-indigo-600 hover:underline text-sm"
+                >
+                  + Add another dish
+                </button>
+              )}
             </div>
           </div>
-
+          {/* Buttons */}
           <div className="flex justify-end gap-2 mt-6">
             <button
               onClick={onClose}
