@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import AddMealModal from "@/components/AddMealModal";
 
 export default function Home() {
   const [events, setEvents] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadEvents = async () => {
     const res = await fetch("/api/events");
@@ -18,38 +20,16 @@ export default function Home() {
         title: e.title,
         start: e.start_time,
         end: e.end_time,
+        backgroundColor:
+          e.meal_type === "breakfast"
+            ? "#fef08a"
+            : e.meal_type === "lunch"
+            ? "#86efac"
+            : e.meal_type === "dinner"
+            ? "#93c5fd"
+            : "#e5e7eb",
       }))
     );
-  };
-
-  const handleDateClick = async (info: any) => {
-    const title = prompt("Add a meal or event:");
-    if (title) {
-      const start = new Date(info.dateStr).toISOString();
-      await fetch("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          mealType: "custom",
-          startTime: start,
-          endTime: start,
-        }),
-      });
-      loadEvents();
-    }
-  };
-
-  const handleEventClick = async (info: any) => {
-    const confirmDelete = confirm(`Delete "${info.event.title}"?`);
-    if (confirmDelete) {
-      await fetch("/api/events", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: info.event.id }),
-      });
-      loadEvents();
-    }
   };
 
   useEffect(() => {
@@ -57,17 +37,38 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        🗓️ Supabase Calendar Demo
-      </h1>
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        height="80vh"
-        events={events}
-        dateClick={handleDateClick}
-        eventClick={handleEventClick}
+    <main className="min-h-screen p-6 bg-gray-50">
+      {/* Header toolbar */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">🍽️ Meal Planner Calendar</h1>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+        >
+          + Add Meal
+        </button>
+      </div>
+
+      {/* Calendar */}
+      <div className="bg-white p-4 rounded-xl shadow">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          height="80vh"
+          events={events}
+        />
+      </div>
+
+      {/* Modal */}
+      <AddMealModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSaved={loadEvents}
       />
     </main>
   );
